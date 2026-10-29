@@ -1,4 +1,4 @@
-FROM rust:1.88-bookworm AS builder
+FROM rustlang/rust:nightly-bookworm AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends git python3 python3-dev build-essential pkg-config && rm -rf /var/lib/apt/lists/*
 COPY --from=ghcr.io/astral-sh/uv:0.6.5 /uv /usr/local/bin/uv
