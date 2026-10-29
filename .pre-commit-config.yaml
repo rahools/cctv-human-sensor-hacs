@@ -1,0 +1,40 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint
+        entry: uv run --frozen --no-sync ruff check --fix --force-exclude
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run --frozen --no-sync ruff format --force-exclude
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: uv run --frozen --no-sync mypy server/src/hunch_cctv custom_components/hunch
+        language: system
+        pass_filenames: false
+        files: \.py$
+      - id: javascript-syntax
+        name: JavaScript syntax
+        entry: node --check
+        language: system
+        types: [javascript]
+      - id: docker-compose-config
+        name: Docker Compose configuration
+        entry: docker compose config --quiet
+        language: system
+        pass_filenames: false
+        files: (^|/)compose\.ya?ml$

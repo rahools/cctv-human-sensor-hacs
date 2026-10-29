@@ -1,0 +1,19 @@
+services:
+  detector:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8765:8765"
+    environment:
+      HUNCH_TOKEN: ${HUNCH_TOKEN:-}
+      HUNCH_THRESHOLD: ${HUNCH_THRESHOLD:-0.5}
+      HUNCH_IMAGE_TOKENS: ${HUNCH_IMAGE_TOKENS:-70}
+    volumes:
+      - hunch-models:/models
+      - hunch-state:/data
+    restart: unless-stopped
+
+volumes:
+  hunch-models:
+  hunch-state:

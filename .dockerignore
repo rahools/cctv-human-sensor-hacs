@@ -1,0 +1,11 @@
+.git
+.venv
+.ruff_cache
+.mypy_cache
+.pre-commit-cache
+.validation-*
+**/__pycache__
+**/*.pyc
+.DS_Store
+custom_components
+hacs.json

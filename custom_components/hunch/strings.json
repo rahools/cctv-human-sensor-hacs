@@ -1,0 +1,98 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Hunch",
+        "description": "Enter the address of your local human-detection server.",
+        "data": {
+          "server_url": "Server URL",
+          "token": "API token",
+          "verify_tls": "Verify TLS certificate"
+        },
+        "data_description": {
+          "server_url": "For example, http://192.168.1.20:8765",
+          "token": "Leave empty if the server has no token."
+        }
+      },
+      "reconfigure": {
+        "title": "Change Hunch server",
+        "data": {
+          "server_url": "Server URL",
+          "token": "API token",
+          "verify_tls": "Verify TLS certificate"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the server. Check the address and that the model is ready.",
+      "invalid_auth": "The server rejected the API token.",
+      "invalid_response": "The server returned an invalid or not-ready response.",
+      "invalid_url": "Enter a valid HTTP or HTTPS URL.",
+      "credentials_in_url": "Use the username and password fields instead of credentials in the URL."
+    },
+    "abort": {
+      "already_configured": "This Hunch server is already configured."
+    }
+  },
+  "config_subentries": {
+    "camera": {
+      "entry_type": "CCTV source",
+      "initiate_flow": {
+        "user": "Add CCTV source",
+        "reconfigure": "Change CCTV source"
+      },
+      "step": {
+        "user": {
+          "title": "Add CCTV source",
+          "description": "The snapshot is tested before the source is added. Open the Hunch panel afterwards to draw a detection zone.",
+          "data": {
+            "camera_name": "Camera name",
+            "snapshot_url": "Snapshot URL",
+            "auth_type": "Authentication",
+            "username": "Username",
+            "password": "Password",
+            "verify_tls": "Verify TLS certificate",
+            "motion_enabled": "Only detect humans after motion",
+            "poll_interval": "Snapshot interval (seconds)",
+            "detection_interval": "Detection interval during motion (seconds)",
+            "threshold": "Human-confidence threshold",
+            "clear_delay": "Clear human detection after (seconds)",
+            "pixel_threshold": "Motion pixel threshold",
+            "area_threshold": "Motion changed-area ratio",
+            "trigger_frames": "Consecutive motion frames",
+            "motion_end_delay": "Motion-end delay (seconds)"
+          }
+        },
+        "reconfigure": {
+          "title": "Change CCTV source",
+          "description": "Leave the password empty to keep the saved password. Edit the detection zone in the Hunch panel.",
+          "data": {
+            "camera_name": "Camera name",
+            "snapshot_url": "Snapshot URL",
+            "auth_type": "Authentication",
+            "username": "Username",
+            "password": "Password",
+            "verify_tls": "Verify TLS certificate",
+            "motion_enabled": "Only detect humans after motion",
+            "poll_interval": "Snapshot interval (seconds)",
+            "detection_interval": "Detection interval during motion (seconds)",
+            "threshold": "Human-confidence threshold",
+            "clear_delay": "Clear human detection after (seconds)",
+            "pixel_threshold": "Motion pixel threshold",
+            "area_threshold": "Motion changed-area ratio",
+            "trigger_frames": "Consecutive motion frames",
+            "motion_end_delay": "Motion-end delay (seconds)"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "Cannot fetch the camera snapshot.",
+        "invalid_auth": "The camera rejected these credentials.",
+        "invalid_response": "The snapshot URL returned an invalid response.",
+        "invalid_image": "The snapshot URL did not return a valid JPEG or PNG.",
+        "invalid_url": "Enter a valid HTTP or HTTPS snapshot URL.",
+        "credentials_in_url": "Use the username and password fields instead of credentials in the URL."
+      }
+    }
+  }
+}
