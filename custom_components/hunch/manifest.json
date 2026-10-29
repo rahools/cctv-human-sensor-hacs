@@ -4,9 +4,9 @@
   "codeowners": [],
   "config_flow": true,
   "dependencies": ["frontend", "websocket_api"],
-  "documentation": "https://github.com/undrgrnd-labs/hunch",
+  "documentation": "https://github.com/rahools/cctv-human-sensor-hacs",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.0.1"
 }

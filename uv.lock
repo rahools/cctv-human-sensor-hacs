@@ -587,7 +587,7 @@ wheels = [
 
 [[package]]
 name = "cctv-human-sensor-hacs"
-version = "0.1.0"
+version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "hunch-cctv-server" },
@@ -1237,7 +1237,7 @@ dependencies = [
 
 [[package]]
 name = "hunch-cctv-server"
-version = "0.1.0"
+version = "0.0.1"
 source = { editable = "server" }
 dependencies = [
     { name = "fastapi" },

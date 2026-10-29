@@ -1,8 +1,6 @@
 services:
   detector:
-    build:
-      context: .
-      dockerfile: server/Dockerfile
+    image: ghcr.io/rahools/cctv-human-sensor-hacs:latest
     ports:
       - "8765:8765"
     environment:
