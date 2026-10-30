@@ -152,10 +152,11 @@ cd /tmp/cctv-human-sensor-hacs
 git sparse-checkout set custom_components/hunch
 mkdir -p "$HA_CONFIG/custom_components"
 cp -R custom_components/hunch "$HA_CONFIG/custom_components/"
+chmod +x "$HA_CONFIG/custom_components/hunch/upgrade.sh"
 docker restart <homeassistant-container-name>
 ```
 
-To update a sparse checkout later, run `git pull` in `/tmp/cctv-human-sensor-hacs`, copy `custom_components/hunch` again, and restart Home Assistant.
+After this one-time installation, use `upgrade.sh` as described in [Updating](#updating); no further sparse checkouts are needed.
 
 The resulting path must be:
 
@@ -246,7 +247,33 @@ Diagnostic entity attributes include `detection_mode`, `last_snapshot_ms`, `last
 
 ## Updating
 
-Update the server and integration source:
+### Home Assistant integration
+
+For a manual installation, run the upgrade script included in the component on the Docker host:
+
+```bash
+"$HA_CONFIG/custom_components/hunch/upgrade.sh"
+```
+
+The script finds the latest `v*` tag, validates the downloaded manifest, backs up the current component, and atomically installs the new version. It does not modify `/config/.storage/`, `/config/automations.yaml`, camera settings, credentials, zones, or automations. Component-code backups are stored under `$HA_CONFIG/backups/hunch/`.
+
+To upgrade and restart Home Assistant in one command:
+
+```bash
+"$HA_CONFIG/custom_components/hunch/upgrade.sh" --restart <homeassistant-container-name>
+```
+
+To install a specific version or roll back:
+
+```bash
+"$HA_CONFIG/custom_components/hunch/upgrade.sh" v0.0.1 --restart <homeassistant-container-name>
+```
+
+The script requires `bash`, `curl`, `git`, `tar`, and `python3` on the Docker host. Restart Home Assistant manually if `--restart` is not used. If you installed through HACS, update through HACS instead.
+
+### Detection server
+
+Update the server configuration and pull the latest published image:
 
 ```bash
 cd cctv-human-sensor-hacs
@@ -254,15 +281,6 @@ git pull
 docker compose pull
 docker compose up -d
 ```
-
-If you installed manually, copy the updated integration and restart Home Assistant:
-
-```bash
-cp -R custom_components/hunch "$HA_CONFIG/custom_components/"
-docker restart <homeassistant-container-name>
-```
-
-If you installed through HACS, update through HACS instead and restart Home Assistant.
 
 ## Troubleshooting
 
