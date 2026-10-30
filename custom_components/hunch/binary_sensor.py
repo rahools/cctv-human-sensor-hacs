@@ -51,6 +51,11 @@ class HumanSensor(BinarySensorEntity):
             "last_checked": self.runtime.last_checked,
             "last_detected": self.runtime.last_detected,
             "motion_filtering": self.runtime.config.get("motion_enabled", True),
+            "detection_mode": self.runtime.detection_mode,
+            "last_snapshot_ms": self.runtime.last_snapshot_ms,
+            "last_inference_ms": self.runtime.last_inference_ms,
+            "last_detection_queued_ms": self.runtime.last_detection_queued_ms,
+            "last_pipeline_ms": self.runtime.last_pipeline_ms,
         }
 
     async def async_added_to_hass(self) -> None:

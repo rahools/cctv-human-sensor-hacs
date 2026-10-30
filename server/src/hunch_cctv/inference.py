@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Protocol
 
 from .settings import Settings
@@ -12,6 +13,8 @@ from .settings import Settings
 class Detection:
     human: bool
     confidence: float
+    queue_ms: float = 0.0
+    inference_ms: float = 0.0
 
 
 class Engine(Protocol):
@@ -36,7 +39,7 @@ class HunchEngine:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.ready = False
-        self._queue: asyncio.Queue[tuple[bytes, float, asyncio.Future[Detection]] | None] = asyncio.Queue(
+        self._queue: asyncio.Queue[tuple[bytes, float, float, asyncio.Future[Detection]] | None] = asyncio.Queue(
             maxsize=settings.queue_size
         )
         self._worker: asyncio.Task[None] | None = None
@@ -83,7 +86,7 @@ class HunchEngine:
             raise InferenceNotReadyError
         future = asyncio.get_running_loop().create_future()
         try:
-            self._queue.put_nowait((image, threshold, future))
+            self._queue.put_nowait((image, threshold, time.monotonic(), future))
         except asyncio.QueueFull as error:
             raise InferenceBusyError from error
         try:
@@ -94,15 +97,22 @@ class HunchEngine:
 
     async def _run(self) -> None:
         while (item := await self._queue.get()) is not None:
-            image, threshold, future = item
+            image, threshold, queued_at, future = item
             if future.cancelled():
                 continue
+            queue_ms = (time.monotonic() - queued_at) * 1000
+            inference_started = time.monotonic()
             try:
                 result = await asyncio.to_thread(self._infer, image, threshold)
             except Exception as error:
                 if not future.done():
                     future.set_exception(error)
             else:
+                result = replace(
+                    result,
+                    queue_ms=queue_ms,
+                    inference_ms=(time.monotonic() - inference_started) * 1000,
+                )
                 if not future.done():
                     future.set_result(result)
 

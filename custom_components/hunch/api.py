@@ -46,6 +46,14 @@ def normalize_url(value: str, *, server: bool = False) -> str:
     return str(url).rstrip("/") if server else str(url)
 
 
+@dataclass(frozen=True, slots=True)
+class DetectionResult:
+    human: bool
+    confidence: float
+    queue_ms: float
+    inference_ms: float
+
+
 class HunchClient:
     def __init__(self, session: ClientSession, config: dict[str, Any]) -> None:
         self._session = session
@@ -78,7 +86,7 @@ class HunchClient:
             raise HunchResponseError("Server is not ready")
         return data
 
-    async def detect(self, image: bytes, threshold: float) -> tuple[bool, float]:
+    async def detect(self, image: bytes, threshold: float) -> DetectionResult:
         try:
             async with self._session.post(
                 f"{self._base_url}/v1/detections/human",
@@ -92,7 +100,12 @@ class HunchClient:
                 if response.status != 200:
                     raise HunchResponseError(f"Detection returned HTTP {response.status}")
                 data = await response.json()
-                return bool(data["human"]), float(data["confidence"])
+                return DetectionResult(
+                    human=bool(data["human"]),
+                    confidence=float(data["confidence"]),
+                    queue_ms=float(response.headers.get("X-Inference-Queue-Ms", "0")),
+                    inference_ms=float(response.headers.get("X-Inference-Ms", "0")),
+                )
         except (HunchAuthenticationError, HunchResponseError):
             raise
         except (TimeoutError, aiohttp.ClientError, KeyError, TypeError, ValueError) as error:

@@ -63,6 +63,7 @@ def create_app(engine: Engine | None = None, settings: Settings | None = None) -
     @app.post("/v1/detections/human", dependencies=[Depends(authenticated)])
     async def detect_human(
         request: Request,
+        response: Response,
         x_decision_threshold: float | None = Header(default=None),
     ) -> dict[str, bool | float]:
         content_type = request.headers.get("content-type", "").split(";", 1)[0].lower()
@@ -89,6 +90,8 @@ def create_app(engine: Engine | None = None, settings: Settings | None = None) -
             raise HTTPException(status_code=503, detail="Inference queue is full") from error
         except TimeoutError as error:
             raise HTTPException(status_code=504, detail="Inference timed out") from error
+        response.headers["X-Inference-Queue-Ms"] = f"{result.queue_ms:.3f}"
+        response.headers["X-Inference-Ms"] = f"{result.inference_ms:.3f}"
         return {"human": result.human, "confidence": round(result.confidence, 6)}
 
     @app.exception_handler(ValueError)

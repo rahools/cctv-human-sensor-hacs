@@ -53,6 +53,7 @@ from .const import (
     CONF_SNAPSHOT_URL,
     CONF_THRESHOLD,
     CONF_TOKEN,
+    CONF_TRACKING_ENABLED,
     CONF_TRIGGER_FRAMES,
     CONF_USERNAME,
     CONF_VERIFY_TLS,
@@ -93,6 +94,7 @@ CAMERA_SCHEMA = probatio.Schema(
         probatio.Optional(CONF_PASSWORD): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
         probatio.Optional(CONF_VERIFY_TLS, default=True): BooleanSelector(),
         probatio.Optional(CONF_MOTION_ENABLED, default=True): BooleanSelector(),
+        probatio.Optional(CONF_TRACKING_ENABLED, default=True): BooleanSelector(),
         probatio.Optional(CONF_POLL_INTERVAL, default=DEFAULT_POLL_INTERVAL): NumberSelector(
             NumberSelectorConfig(min=0.5, max=10, step=0.5, mode=NumberSelectorMode.BOX)
         ),

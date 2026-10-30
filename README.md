@@ -194,10 +194,11 @@ The main settings are:
 | Camera name | Required | Names the Home Assistant device and entity |
 | Snapshot URL | Required | JPEG or PNG endpoint polled by the integration |
 | Only detect humans after motion | Enabled | Avoids inference calls for unchanged frames |
+| Keep detecting while a human is present | Enabled | Continues inference without motion until the person leaves |
 | Snapshot interval | 1 second | How often the camera image is fetched; 0.5 seconds is supported |
-| Detection interval during motion | 1 second | Maximum inference frequency while motion remains active |
+| Detection interval during motion or tracking | 1 second | Maximum inference frequency in the active detection mode |
 | Human-confidence threshold | 0.50 | Minimum score for a positive result |
-| Clear human detection after | 5 seconds | How long a positive result remains active without another positive result |
+| Clear after continuous negative results | 5 seconds | Negative detection time required before clearing and restoring motion gating |
 
 Advanced options control pixel difference, changed-area ratio, consecutive motion frames, and motion-end delay. Start with the defaults and tune them using footage from your own cameras.
 
@@ -237,9 +238,11 @@ actions:
       message: A person was detected.
 ```
 
-A positive result turns the sensor on immediately. Additional positive results extend it. It clears after the configured delay. Camera or server failures do not mean “no human”; after repeated failures, the entity becomes unavailable instead.
+A positive result turns the sensor on immediately and enables **human tracking**. While tracking, frames continue going to the model without requiring motion, so a stationary person remains detected. The sensor clears only after negative results continue for the configured delay; it then resets the motion reference and returns to motion gating. Brief negative results do not clear it, and camera or server failures do not count as negative detections.
 
-Motion filtering reduces server load, but a perfectly stationary person produces no new motion. With filtering enabled, treat the entity as **human detected recently**, not guaranteed continuous occupancy.
+For lights and other latency-sensitive automations, use a **0.5-second snapshot interval**, a **0.5-second detection interval**, and **1 consecutive motion frame**. Positive detection requires only one result. These settings increase camera traffic and model usage, particularly while a person is being tracked.
+
+Diagnostic entity attributes include `detection_mode`, `last_snapshot_ms`, `last_inference_ms`, `last_detection_queued_ms`, and `last_pipeline_ms`. Use them to determine whether remaining latency comes from the camera, model inference, server queuing, or the complete pipeline.
 
 ## Updating
 
